@@ -10,6 +10,7 @@
 		private $server;// = $DBSERVER;
 		private $schema;// = $DBNAME;
 		private $port;// = 3306;
+		private $cloudsql;
 		private $lastId;
 		
 		public $connected;
@@ -34,13 +35,15 @@
 				$this->password = $cfg->settings["database"]["password"];
 			}
 			$this->server = $cfg->settings["database"	]["server"];
-			$this->schema = $cfg->settings["database"]["database"];;
+			$this->schema = $cfg->settings["database"]["database"];
+			$this->cloudsql = $cfg->settings["database"]["cloudsql"];
 			$this->port = $cfg->settings["database"]["port"];
 			
 			if($this->server && $this->port && $this->schema && $this->username)
 			{
 				
-				$this->con = new mysqli($this->server, $this->username, $this->password, NULL,  $this->port);
+				// $this->con = new mysqli($this->server, $this->username, $this->password, NULL,  $this->port);
+				$this->con = new mysqli(null, $this->username, $this->password, $this->schema, null, $this->cloudsql);
 				$this->connected = true;
 				echo $this->con->connect_error;
 				if ($this->con->connect_errno) { 

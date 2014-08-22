@@ -1,6 +1,11 @@
 <?php
 
+error_reporting(E_ALL); ini_set('display_errors', 1); // TODO Decide if we need this
+
 if (isset($_REQUEST['_SESSION'])) throw new Exception('Bad client request');
+
+require_once 'google/appengine/api/cloud_storage/CloudStorageTools.php';
+use google\appengine\api\cloud_storage\CloudStorageTools;
 
 date_default_timezone_set('UTC');
 $dat = new DateTime('now');
@@ -91,14 +96,14 @@ include (sprintf('%s/Classes/EcEntry.php', $DIR));
         if($cfg->settings['security']['use_ldap'] && !function_exists('ldap_connect'))
         {
             $cfg->settings['security']['use_ldap'] = false;
-            $cfg->writeConfig();
+            // $cfg->writeConfig(); // TODO Decide if this needs to be included
         }
 
         if(!array_key_exists('salt',$cfg->settings['security']) || trim($cfg->settings['security']['salt']) == '')
         {
             $str = genStr();
             $cfg->settings['security']['salt'] = $str;
-            $cfg->writeConfig();
+            // $cfg->writeConfig();
         }
         
 
@@ -118,7 +123,7 @@ include (sprintf('%s/Classes/EcEntry.php', $DIR));
     $cfg_tpl_fn = sprintf('%s/ec/epicollect-blank.ini', rtrim($DIR, '/'));
     $cfg_fn = sprintf('%s/ec/epicollect.ini', rtrim($DIR, '/'));
     
-    copy($cfg_tpl_fn, $cfg_fn);
+    // copy($cfg_tpl_fn, $cfg_fn); // TODO Decide on stategy for Config
     makedirs();
     
  }
@@ -127,7 +132,8 @@ include (sprintf('%s/Classes/EcEntry.php', $DIR));
  {
     global $DIR;
  
-    $updir = sprintf('%s/ec/uploads', rtrim($DIR, '/'));
+    $updir = "gs://" . CloudStorageTools::getDefaultGoogleStorageBucketName() . "/uploads"; 
+    error_log("updir = " . $updir); // TODO remove
     if(!file_exists($updir)) mkdir($updir);
  }
  
@@ -169,7 +175,7 @@ function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
 
 
 
-set_error_handler('handleError', E_ALL);
+// set_error_handler('handleError', E_ALL); // TODO Seems to break logging
 openCfg();
 $DEFAULT_OUT = $cfg->settings['misc']['default_out'];
 $log = new Logger('Ec2');
@@ -1185,7 +1191,7 @@ function uploadData()
     
     
     
-	$flog = fopen('ec/uploads/fileUploadLog.log', 'a');
+	$flog = fopen('gs://ultimate-flame-678/uploads/fileUploadLog.log', 'a');
 	$prj = new EcProject();
 	$prj->name = preg_replace('/\/upload\.?(xml|json)?$/', '', $url);
 
@@ -3568,7 +3574,7 @@ function writeSettings()
 		$cfg->settings["security"]["salt"] = $str;
 	}
 		
-	$cfg->writeConfig();
+	// $cfg->writeConfig();
 	header("Cache-Control: no-cache, must-revalidate");
 	if(getValIfExists($_POST, "edit"))
 	{

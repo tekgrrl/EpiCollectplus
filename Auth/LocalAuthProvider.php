@@ -1,5 +1,5 @@
 <?php
-	@include "./ProviderTemplate.php";
+	include_once "Auth/ProviderTemplate.php"; // TODO include_once and had to specify Auth/
 	
 	class LocalLoginProvider extends AuthProvider
 	{
