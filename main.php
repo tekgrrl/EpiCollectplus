@@ -133,7 +133,6 @@ include (sprintf('%s/Classes/EcEntry.php', $DIR));
     global $DIR;
  
     $updir = "gs://" . CloudStorageTools::getDefaultGoogleStorageBucketName() . "/uploads"; 
-    error_log("updir = " . $updir); // TODO remove
     if(!file_exists($updir)) mkdir($updir);
  }
  
@@ -1190,8 +1189,8 @@ function uploadData()
 	global  $url, $log;
     
     
-    
-	$flog = fopen('gs://ultimate-flame-678/uploads/fileUploadLog.log', 'a');
+    error_log("body = " . @file_get_contents('php://input'));  // get here TODO: remove
+	// $flog = fopen('gs://ultimate-flame-679.appspot.com/uploads/fileUploadLog.log', 'a');
 	$prj = new EcProject();
 	$prj->name = preg_replace('/\/upload\.?(xml|json)?$/', '', $url);
 
@@ -1206,7 +1205,7 @@ function uploadData()
 		if(count($_FILES) > 0)
 		{
 			foreach($_FILES as $file){
-					
+				error_log("files = " . __LINE__); // don't get here TODO: remove
 				if(preg_match("/.+\.xml$/", $file["name"])){
 					$ts = new DateTime("now", new DateTimeZone("UTC"));
 					$ts = $ts->getTimestamp();
@@ -1241,7 +1240,7 @@ function uploadData()
 					try{
 						//if(!fileExists("./uploads/{$prj->name}")) mkdir("./uploads/{$prj->name}");
 							
-						move_uploaded_file($file['tmp_name'], "./ec/uploads/{$prj->name}~" . ($_REQUEST["type"] == "thumbnail" ? "tn~" : "" ) ."{$file['name']}");
+						move_uploaded_file($file['tmp_name'], "gs://ultimate-flame-679.appspot.com/uploads/{$prj->name}~" . ($_REQUEST["type"] == "thumbnail" ? "tn~" : "" ) ."{$file['name']}");
 						$log->write('debug', $file['name'] . " copied to uploads directory\n");
 						echo 1;
 					}
@@ -1350,7 +1349,7 @@ function uploadData()
 			}
 		}
 	}
-	fclose($flog);
+	// fclose($flog);
 }
 
 function getChildEntries($survey, $tbl, $entry, &$res, $stopTbl = false)
