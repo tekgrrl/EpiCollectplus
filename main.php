@@ -1239,8 +1239,8 @@ function uploadData()
 
 					try{
 						//if(!fileExists("./uploads/{$prj->name}")) mkdir("./uploads/{$prj->name}");
-							
-						move_uploaded_file($file['tmp_name'], "gs://ultimate-flame-679.appspot.com/uploads/{$prj->name}~" . ($_REQUEST["type"] == "thumbnail" ? "tn~" : "" ) ."{$file['name']}");
+						move_uploaded_file($file['tmp_name'], "./ec/uploads/{$prj->name}~" . ($_REQUEST["type"] == "thumbnail" ? "tn~" : "" ) ."{$file['name']}");
+						// move_uploaded_file($file['tmp_name'], "gs://ultimate-flame-679.appspot.com/uploads/{$prj->name}~" . ($_REQUEST["type"] == "thumbnail" ? "tn~" : "" ) ."{$file['name']}");
 						$log->write('debug', $file['name'] . " copied to uploads directory\n");
 						echo 1;
 					}
